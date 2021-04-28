@@ -10,7 +10,7 @@ on:
 jobs:
   repo-sync: # 同步和推送
     env:
-      PAT: ${{ secrets.GITHUB_TOKEN }}
+      PAT: ${{ secrets.TOKEN }}
       dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
@@ -26,7 +26,7 @@ jobs:
           source_repo: "https://github.com/chiupam/Epidemic.git"
           source_branch: "master"
           destination_branch: "master"
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.TOKEN }}
           
       - name: Sync Github -> Gitee
         uses: Yikun/hub-mirror-action@master
