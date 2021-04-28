@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: sync chiupam-Epidemic
+      - name: Sync chiupam/Epidemic@master
         uses: repo-sync/github-sync@v2
         if: env.PAT
         with:
@@ -28,7 +28,7 @@ jobs:
           destination_branch: "master"
           github_token: ${{ secrets.PAT }}
           
-      - name: sync github -> gitee
+      - name: Sync Github -> Gitee
         uses: Yikun/hub-mirror-action@master
         if: env.dst_key
         with:
