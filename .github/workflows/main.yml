@@ -13,7 +13,6 @@ jobs:
       PAT: ${{ secrets.TOKEN }}
       dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
     runs-on: ubuntu-latest
-    if: github.event.repository.owner.id == github.event.sender.id
     steps:
       - uses: actions/checkout@v2
         with:
