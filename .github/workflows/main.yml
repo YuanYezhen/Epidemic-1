@@ -1,0 +1,70 @@
+name: Sync repo and run Task
+
+on: 
+  workflow_dispatch:
+  push:
+    branches: master
+  schedule:
+    - cron: '0 7,23 * * *'
+
+jobs:
+  repo-sync: # 同步和推送
+    env:
+      PAT: ${{ secrets.PAT }}
+      dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+    runs-on: ubuntu-latest
+    if: github.event.repository.owner.id == github.event.sender.id
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          persist-credentials: false
+
+      - name: sync chiupam/Epidemic # 同步我的仓库
+        uses: repo-sync/github-sync@v2
+        if: env.PAT
+        with:
+          source_repo: "https://github.com/chiupam/Epidemic.git"
+          source_branch: "master"
+          destination_branch: "master"
+          github_token: ${{ secrets.PAT }}
+    
+      - name: sync github -> gitee # 推送到 Gitee
+        uses: Yikun/hub-mirror-action@master
+        if: env.dst_key
+        with:
+          src: github/chiupam
+          dst: gitee/chiupam
+          static_list: "Epidemic"
+          dst_key: ${{ secrets.GITEE_PRIVATE_KEY }}
+          dst_token: ${{ secrets.GITEE_TOKEN }}
+          
+  post-data: # 每日签到
+    env:
+      USER: ${{ secrets.USER }}
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Set up Python
+      if: env.USER
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+    - uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.os }}-pip-${{ hashFiles('**/run_in_Actions/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-pip-
+    - name: Set time zone
+      if: env.USER
+      run: sudo timedatectl set-timezone 'Asia/Shanghai'
+    - name: Install dependencies
+      if: env.USER
+      run: |
+        pip install -r requirements.txt
+    - name: Build and publish
+      if: env.USER
+      run: |
+        echo "$USER" > ./user.json
+        python main.py
+        
