@@ -1,4 +1,4 @@
-name: Sync repo and run Task
+name: Sync repo & Run task
 
 on: 
   workflow_dispatch:
@@ -19,7 +19,7 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: sync chiupam/Epidemic # 同步我的仓库
+      - name: sync chiupam-Epidemic
         uses: repo-sync/github-sync@v2
         if: env.PAT
         with:
@@ -27,8 +27,8 @@ jobs:
           source_branch: "master"
           destination_branch: "master"
           github_token: ${{ secrets.PAT }}
-    
-      - name: sync github -> gitee # 推送到 Gitee
+          
+      - name: sync github -> gitee
         uses: Yikun/hub-mirror-action@master
         if: env.dst_key
         with:
@@ -43,25 +43,31 @@ jobs:
       USER: ${{ secrets.USER }}
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - name: Check
+      uses: actions/checkout@v2
+    
     - name: Set up Python
       if: env.USER
       uses: actions/setup-python@v2
       with:
         python-version: '3.x'
+        
     - uses: actions/cache@v2
       with:
         path: ~/.cache/pip
         key: ${{ runner.os }}-pip-${{ hashFiles('**/run_in_Actions/requirements.txt') }}
         restore-keys: |
           ${{ runner.os }}-pip-
+          
     - name: Set time zone
       if: env.USER
       run: sudo timedatectl set-timezone 'Asia/Shanghai'
+      
     - name: Install dependencies
       if: env.USER
       run: |
         pip install -r requirements.txt
+        
     - name: Build and publish
       if: env.USER
       run: |
