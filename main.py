@@ -41,8 +41,8 @@ def Epidemic(_username, _password, _useragent, _notify, _token):
         result = str(tree.xpath('/html/body/script/text()'))
         if result.find('当前采集日期已登记！') != -1:
             print(f'{get_time()} 当前采集日期已登记！')
-        elif result.find('只能1点至18点可以填报！') != -1:
-            print(f'{get_time()} 只能1点至18点可以填报！')
+        elif result.find('只能1点至20点可以填报！') != -1:
+            print(f'{get_time()} 只能1点至20点可以填报！')
         else:
             # 封装post数据包
             post_data = {
